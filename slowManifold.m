@@ -18,7 +18,8 @@ function [Z0,Zna,T] = slowManifold(xi,xi_na,Z00,kappa,p,T_end,right)
 %               Z00     Initial dimensionless 'energy'
 %               kappa   Dimensionless linear stifness of absorber
 %               p       Power of nonlinear spring
-%               T_end   The final time of the simulations [epsilon*s]
+%               T_end   The final time of the simulations, mutiplied by the mode vibration frequency
+%                       and epsilon
 %               right   'true' if the right branch of the SIM should always
 %                        be chosen
 %

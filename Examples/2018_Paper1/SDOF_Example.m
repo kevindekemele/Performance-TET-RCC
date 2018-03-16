@@ -11,15 +11,16 @@ clear all
  addpath('../../');
 
 
-%% MDOF systeem
+%% SDOF system
 
+% Main system
 m = 1;
 k = 1;
 c = 0;
 omega0 = sqrt(k/m);
 x0_dot = 0.1;
 
-%% Tuning
+% Absorber
 
 mna =0.02;
 cna = 0.1*omega0*mna;
@@ -27,17 +28,12 @@ ep = mna/m;
 xi = c/m/omega0/ep;
 xi_na = (cna/mna)/omega0 ;
 
-%% System and damping parameters
 
 % Tuning parameters, these were changed for the other simulations
 p = 3;
 kappa = 0;
 
-% Simulation parameters
-% x0_real is the actual applied initial condition, change to test
-% robustness
-x0_real= x0_dot;
-Tl =200;
+
 
 %% Tuning
 b = nchoosek(p,(p-1)/2);
@@ -52,6 +48,13 @@ klin = kappa*mna*omega0^2;
 
 
 %% Simulations
+
+% Simulation parameters
+% x0_real is the actual applied initial condition, change to test
+% robustness
+x0_real= x0_dot;
+Tl =200;
+
 Zoo = nthroot(Om*x0_real^(p-1),(p-1)/2)
 x0 = [0 0];
 x0_dot = [x0_real 0];

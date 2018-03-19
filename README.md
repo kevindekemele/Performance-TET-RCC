@@ -19,6 +19,7 @@ Besides citing one of the base articles [1], this repo can additionally be cited
   publisher = {GitHub},
   journal = {GitHub repository},
   howpublished = {\url{https://github.com/kevindekemele/Performance-TET-RCC}}
+  doi={https://doi.org/10.5281/zenodo.1203678}
 }
 ```
 

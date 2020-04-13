@@ -13,7 +13,7 @@ function [T_pump] = pumpingTime(xi_na,Z00,kappa,p)
 %               kappa   Dimensionless linear stiffness of absorber
 %               p       Power of nonlinear absorber
 %
-% Copyright (c) 2018, Kevin Dekemele (kevindekemele@gmail.com)
+% Copyright (c) 2018-2020, Kevin Dekemele (kevindekemele@gmail.com)
 % Source code available at 
 % Licensed under GNU GPLv3 license.
 %
@@ -29,17 +29,20 @@ Z0M = (xi_na^2+(1-kappa-b/(2^(p-1))*ZnaP^((p-1)/2))^2).*ZnaP;
 
 %% Find Zna(0) that corresponds with Z0(0)
 
-syms x;
-s = solve((xi_na^2+(1-kappa-b/(2^(p-1))*x^((p-1)/2))^2)*x-Z00==0,x);
-s_double = double(vpa(s));
-cond = abs(real(s_double)) > 1e6 * abs(imag(s_double)); % Condition to Remove imaginary round-offs errors
-s_double(cond) = real(s_double(cond));
-Zna0 = max(s_double); % Right most solution on SIM
+r = [];
+r(1)=b^2/2^(2*p-2);
+r((p+1)/2)=-2*(1-kappa)*b/(2^(p-1));
+r(p)=xi_na^2+(1-kappa)^2;
+r(p+1)=-Z00;
+
+rot = roots(r);
+s_double =  rot(imag(rot)==0);
+Zna0 = max(s_double) % Right most solution on SIM
 
 %% Calculate the t for each state
 t1 = p*b^2/((p-1)*2^(2*(p-1)))*Zna0^(p-1)-b*((1-kappa)*(p+1))/((p-1)/2*2^(p-1))*Zna0^((p-1)/2) + ((1-kappa)^2+xi_na^2)*log(Zna0);
 t2 = p*b^2/((p-1)*2^(2*(p-1)))*ZnaP^(p-1)-b*((1-kappa)*(p+1))/((p-1)/2*2^(p-1))*ZnaP^((p-1)/2) + ((1-kappa)^2+xi_na^2)*log(ZnaP);
 
-T_pump = (t1-t2)/(xi_na*2*pi);
+T_pump = (t1-t2)/(xi_na);
 end
 

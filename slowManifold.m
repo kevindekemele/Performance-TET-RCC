@@ -23,7 +23,7 @@ function [Z0,Zna,T] = slowManifold(xi,xi_na,Z00,kappa,p,T_end,right)
 %               right   'true' if the right branch of the SIM should always
 %                        be chosen
 %
-% Copyright (c) 2018, Kevin Dekemele (kevindekemele@gmail.com)
+% Copyright (c) 2018-2020, Kevin Dekemele (kevindekemele@gmail.com)
 % Source code available at 
 % Licensed under GNU GPLv3 license.
 %
@@ -41,11 +41,14 @@ Z0M = (xi_na^2+(1-kappa-b/(2^(p-1))*ZnaP^((p-1)/2))^2).*ZnaP;
 
 %% Find Zna(0) that corresponds with Z0(0)
 
-syms x;
-s = solve((xi_na^2+(1-kappa-b/(2^(p-1))*x^((p-1)/2))^2)*x-Z00==0,x);
-s_double = double(vpa(s));
-cond = abs(real(s_double)) > 1e6 * abs(imag(s_double)); % Condition to Remove imaginary round-offs errors
-s_double(cond) = real(s_double(cond));
+r = [];
+r(1)=b^2/2^(2*p-2);
+r((p+1)/2)=-2*(1-kappa)*b/(2^(p-1));
+r(p)=xi_na^2+(1-kappa)^2;
+r(p+1)=-Z00;
+
+rot = roots(r);
+s_double =  rot(imag(rot)==0);
 
 %% Choose Zna(0) corresponding with Z0(0)
 if(Z00 < Z0P && ~right)
@@ -56,10 +59,9 @@ end
 
 %% Find Zna after jump in SIM
 
-s = solve((xi_na^2+(1-kappa-b/(2^(p-1))*x^((p-1)/2))^2)*x-Z0M==0,x);
-s_double = double(vpa(s));
-cond = abs(real(s_double)) > 1e6 * abs(imag(s_double)); % Condition to Remove imaginary round-offs errors
-s_double(cond) = real(s_double(cond));
+r(p+1)=-Z0M;
+rot = roots(r);
+s_double =  rot(imag(rot)==0);
 Znajump = min(s_double);
 
 
@@ -71,7 +73,7 @@ Prec = 1e-16;
 options = odeset('RelTol',Prec,'AbsTol',[Prec]);
  [T2,Y2] = ode45(f2,[0 T_end],[Z00 Zna0],options);
      
-if(Z00 >Z0P || right)
+if((Z00 >Z0P || right)&&T_end~=T2(end))
     
     Zna0=0.999*Znajump;
     Y2(end,1);
